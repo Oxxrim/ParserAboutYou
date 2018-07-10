@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+
 public class CheckForRedirect {
 
     private static final String BASE_URL = "https://www.aboutyou.de";
@@ -12,6 +13,7 @@ public class CheckForRedirect {
     private String url = "";
 
     public String checker(String keyword){
+
 
         url = SEARCH_URL + keyword;
         HttpURLConnection connection = null;
