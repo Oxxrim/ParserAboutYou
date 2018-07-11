@@ -13,6 +13,24 @@ public class Offer {
     private BigDecimal price;
     private BigDecimal initialPrice;
     private String article;
+    private String description;
+    private String size;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
 
     public String getArticle() {
         return article;

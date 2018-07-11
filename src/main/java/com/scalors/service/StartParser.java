@@ -1,5 +1,6 @@
 package com.scalors.service;
 
+import com.scalors.model.Offer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,6 +13,7 @@ public class StartParser {
 
     private List<String> pageUrls = new ArrayList<String>();
     private List<String> goodUrls = new ArrayList<String>();
+    private List<Offer> offersList = new ArrayList<Offer>();
 
     public void paganation(String keyword){
 
@@ -45,7 +47,8 @@ public class StartParser {
         goodUrls = links.parseLinks(pageUrls);
 
         GoodParser goodParser = new GoodParser();
-        goodParser.goodParsing(goodUrls);
+        offersList = goodParser.goodParsing(goodUrls);
+
 
     }
 }
