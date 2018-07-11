@@ -1,5 +1,6 @@
 package com.scalors.service;
 
+import com.scalors.dao.WriterToXML;
 import com.scalors.model.Offer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +16,7 @@ public class StartParser {
     private List<String> goodUrls = new ArrayList<String>();
     private List<Offer> offersList = new ArrayList<Offer>();
 
-    public void paganation(String keyword){
+    public void paganation(String keyword) throws IOException {
 
         int amountOfPages = 0;
         CheckForRedirect redirect = new CheckForRedirect();
@@ -46,9 +47,17 @@ public class StartParser {
 
         goodUrls = links.parseLinks(pageUrls);
 
-        GoodParser goodParser = new GoodParser();
-        offersList = goodParser.goodParsing(goodUrls);
+        for (String offerUrl : goodUrls) {
+            GoodParser goodParser = new GoodParser(offersList,offerUrl);
+            goodParser.start();
+        }
 
+
+        /*GoodParser goodParser = new GoodParser();
+        offersList = goodParser.goodParsing(goodUrls);*/
+
+        WriterToXML writerToXML = new WriterToXML();
+        writerToXML.writeOffersToXML(offersList);
 
     }
 }
