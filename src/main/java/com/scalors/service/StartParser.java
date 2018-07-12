@@ -1,22 +1,25 @@
 package com.scalors.service;
 
+
 import com.scalors.dao.WriterToXML;
 import com.scalors.model.Offer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StartParser {
 
+    private  static final Logger log = Logger.getLogger(StartParser.class.getName());
     private List<String> pageUrls = new ArrayList<String>();
     private List<String> goodUrls = new ArrayList<String>();
     private List<Offer> offersList = new ArrayList<Offer>();
 
-    public void paganation(String keyword) throws IOException {
+    public void pagination(String keyword, int amountOfHttpRequest) throws IOException {
 
         int amountOfPages = 0;
         CheckForRedirect redirect = new CheckForRedirect();
@@ -27,12 +30,18 @@ public class StartParser {
         Document document = null;
 
         try {
+            log.log(Level.INFO,"Connect to : " + verifiedUrl);
             document = Jsoup.connect(verifiedUrl).get();
+            amountOfHttpRequest++;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        amountOfPages = Integer.parseInt(document.getElementsByClass("styles__pageNumbers--1Lsj_").last().getElementsByTag("a").text());
+        try {
+            amountOfPages = Integer.parseInt(document.getElementsByClass("styles__pageNumbers--1Lsj_").last().getElementsByTag("a").text());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
 
         for (int i = 2; i <= amountOfPages; i++){
@@ -41,23 +50,26 @@ public class StartParser {
         }
 
 
-        //System.out.print(amountOfPages);
+
         LinksOnGoodParser  links = new LinksOnGoodParser();
 
 
-        goodUrls = links.parseLinks(pageUrls);
+        goodUrls = links.parseLinks(pageUrls, amountOfHttpRequest);
 
-        for (String offerUrl : goodUrls) {
+        //Trying to do multi-threading but had a exception java.lang.OutOfMemoryError: Java heap space
+        /*for (String offerUrl : goodUrls) {
             GoodParser goodParser = new GoodParser(offersList,offerUrl);
             goodParser.start();
-        }
+        }*/
 
 
-        /*GoodParser goodParser = new GoodParser();
-        offersList = goodParser.goodParsing(goodUrls);*/
+        GoodParser goodParser = new GoodParser();
+        offersList = goodParser.goodParsing(goodUrls, amountOfHttpRequest);
 
         WriterToXML writerToXML = new WriterToXML();
         writerToXML.writeOffersToXML(offersList);
 
+        log.log(Level.INFO,"Amount of triggered HTTP requests : " + amountOfHttpRequest);
+        log.log(Level.INFO,"Amount of extracted products : " + offersList.size());
     }
 }
